@@ -1,3 +1,4 @@
+#用矩阵实现了最小生成树树的Prim算法和Kruskal算法
 import numpy as np
 import random
 class Graph():
@@ -9,29 +10,6 @@ class Graph():
         self.mst_vertex = []
         self.mst_edges = []
 
-        # self.array[0][3] =5
-        # self.array[0][1] = 7
-        # self.array[1][3] = 9
-        # self.array[1][2] = 8
-        # self.array[1][4] = 7
-        # self.array[2][4] = 5
-        # self.array[3][5] = 6
-        # self.array[3][4] = 15
-        # self.array[4][5] = 8
-        # self.array[4][6] = 9
-        # self.array[5][6] = 11
-
-        # self.array[3][0] =5
-        # self.array[1][0] = 7
-        # self.array[3][1] = 9
-        # self.array[2][1] = 8
-        # self.array[4][1] = 7
-        # self.array[4][2] = 5
-        # self.array[5][3] = 6
-        # self.array[4][3] = 15
-        # self.array[5][4] = 8
-        # self.array[6][4] = 9
-        # self.array[6][5] = 11
     def creat_graph(self):
         """创建无向图图矩阵"""
         for i in range(self.edges):
@@ -41,29 +19,6 @@ class Graph():
             self.array[temp1][temp2] = temp3  #无向图
             self.array[temp2][temp1] = temp3  
 
-        
-        '''''
-        self.array[0][1] = 6
-        self.array[1][0] = 6
-        self.array[2][0] = 1
-        self.array[3][0] = 5
-        self.array[4][1] = 3
-        self.array[2][1] = 5
-        self.array[0][2] = 1
-        self.array[1][2] = 5
-        self.array[3][2] = 5
-        self.array[4][2] = 6
-        self.array[5][2] = 4
-        self.array[0][3] = 5
-        self.array[2][3] = 5
-        self.array[5][3] = 2
-        self.array[1][4] = 3
-        self.array[2][4] = 6
-        self.array[5][4] = 6
-        self.array[2][5] = 4
-        self.array[3][5] = 2
-        self.array[4][5] = 6
-        '''''
 def mst_prim(graph):
     """prim最小生成树"""
     graph.mst_vertex.append(random.randint(0,graph.vertex-1))  #随机选取一个顶点
@@ -93,28 +48,28 @@ def mst_kruskal(graph):
         a = len(list(set(sum(graph.mst_vertex,()))))
         vertexs = list(mst_dict.keys())
         for i in range(len(mst_dict.values())):
-            graph = find_path(graph,vertexs[i],list(mst_dict.values())[i])
+            graph = find_tree(graph,vertexs[i],list(mst_dict.values())[i])
 
-def find_path(graph,vertex,edges):
+def find_tree(graph,vertex,edges): #判断图是否再在一棵树上
     tmp_list = sum(graph.mst_vertex,())
     
     if vertex[0] in tmp_list and vertex[1] in tmp_list:
         for tree in graph.mst_vertex:
-            if vertex[0] in tree and vertex[1] in tree:
+            if vertex[0] in tree and vertex[1] in tree:  #两个点在同一颗树上
                 return graph
-        temp1 = find_num(vertex[0],graph.mst_vertex)
+        temp1 = find_num(vertex[0],graph.mst_vertex)  #两个点在不同的树上，加入并将两棵树连在一起
         temp2 = find_num(vertex[1],graph.mst_vertex)
         temp3 = [graph.mst_vertex[x] for x in range(len(graph.mst_vertex)) if x != temp1 and x != temp2]
         temp3.append(sum([graph.mst_vertex[temp1],graph.mst_vertex[temp2]],()))
         graph.mst_vertex = temp3
         graph.mst_edges.append(f'V{vertex[0]} -> V{vertex[1]}:{edges}')
-    elif vertex[0] in tmp_list or vertex[1] in tmp_list:
+    elif vertex[0] in tmp_list or vertex[1] in tmp_list:  #只有一个点在树上，将新加入的点加入这棵树
         temp1 = find_num(vertex[0],graph.mst_vertex) if vertex[0] in tmp_list else find_num(vertex[1],graph.mst_vertex)
         temp2 = [graph.mst_vertex[x] for x in range(len(graph.mst_vertex)) if x != temp1]
         temp2.append(tuple(set(sum([graph.mst_vertex[temp1],vertex],()))))
         graph.mst_vertex = temp2
         graph.mst_edges.append(f'V{vertex[0]} -> V{vertex[1]}:{edges}')
-    else:
+    else:  #点没在任何一颗树上
         graph.mst_vertex.append(vertex)
         graph.mst_edges.append(f'V{vertex[0]} -> V{vertex[1]}:{edges}')
     return graph
